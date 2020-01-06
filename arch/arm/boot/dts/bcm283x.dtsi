@@ -18,7 +18,6 @@
 / {
 	compatible = "brcm,bcm2835";
 	model = "BCM2835";
-	interrupt-parent = <&intc>;
 	#address-cells = <1>;
 	#size-cells = <1>;
 
@@ -55,6 +54,17 @@
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
+
+		system_timer: timer@7e003000 {
+			compatible = "brcm,bcm2835-system-timer";
+			reg = <0x7e003000 0x1000>;
+			interrupts = <1 0>, <1 1>, <1 2>, <1 3>;
+			/* This could be a reference to BCM2835_CLOCK_TIMER,
+			 * but we don't have the driver using the common clock
+			 * support yet.
+			 */
+			clock-frequency = <1000000>;
+		};
 
 		txp: txp@7e004000 {
 			compatible = "brcm,bcm2835-txp";
@@ -421,18 +431,6 @@
 			status = "disabled";
 		};
 
-		pixelvalve@7e206000 {
-			compatible = "brcm,bcm2835-pixelvalve0";
-			reg = <0x7e206000 0x100>;
-			interrupts = <2 13>; /* pwa0 */
-		};
-
-		pixelvalve@7e207000 {
-			compatible = "brcm,bcm2835-pixelvalve1";
-			reg = <0x7e207000 0x100>;
-			interrupts = <2 14>; /* pwa1 */
-		};
-
 		dpi: dpi@7e208000 {
 			compatible = "brcm,bcm2835-dpi";
 			reg = <0x7e208000 0x8c>;
@@ -596,12 +594,6 @@
 			status = "disabled";
 		};
 
-		pixelvalve@7e807000 {
-			compatible = "brcm,bcm2835-pixelvalve2";
-			reg = <0x7e807000 0x100>;
-			interrupts = <2 10>; /* pixelvalve */
-		};
-
 		hdmi: hdmi@7e902000 {
 			compatible = "brcm,bcm2835-hdmi";
 			reg = <0x7e902000 0x600>,
@@ -634,22 +626,16 @@
 	};
 
 	clocks {
-		compatible = "simple-bus";
-		#address-cells = <1>;
-		#size-cells = <0>;
-
 		/* The oscillator is the root of the clock tree. */
-		clk_osc: clock@3 {
+		clk_osc: clk-osc {
 			compatible = "fixed-clock";
-			reg = <3>;
 			#clock-cells = <0>;
 			clock-output-names = "osc";
 			clock-frequency = <19200000>;
 		};
 
-		clk_usb: clock@4 {
+		clk_usb: clk-usb {
 			compatible = "fixed-clock";
-			reg = <4>;
 			#clock-cells = <0>;
 			clock-output-names = "otg";
 			clock-frequency = <480000000>;

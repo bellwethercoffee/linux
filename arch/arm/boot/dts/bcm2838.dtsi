@@ -27,7 +27,7 @@
 			reg = <0x40000000 0x100>;
 		};
 
-		gicv2: gic400@40041000 {
+		gicv2: interrupt-controller@40041000 {
 			interrupt-controller;
 			#interrupt-cells = <3>;
 			compatible = "arm,gic-400";
@@ -188,14 +188,6 @@
 			status = "disabled";
 		};
 
-		pixelvalve@7e206000 {
-			interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>;
-		};
-
-		pixelvalve@7e207000 {
-			interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
-		};
-
 		pwm1: pwm@7e20c800 {
 			compatible = "brcm,bcm2835-pwm";
 			reg = <0x7e20c800 0x28>;
@@ -216,10 +208,6 @@
 
 		hvs@7e400000 {
 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
-		};
-
-		pixelvalve@7e807000 {
-			interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>;
 		};
 	};
 
@@ -243,7 +231,6 @@
 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) |
 					  IRQ_TYPE_LEVEL_LOW)>;
 		arm,cpu-registers-not-fw-configured;
-		always-on;
 	};
 
 	cpus: cpus {
@@ -358,30 +345,21 @@
 			status = "okay";
 		};
 
-		genet: genet@7d580000 {
-			compatible = "brcm,genet-v5";
+		genet: ethernet@7d580000 {
+			compatible = "brcm,bcm2711-genet-v5", "brcm,genet-v5";
 			reg = <0x0 0x7d580000 0x10000>;
-			status = "okay";
 			#address-cells = <0x1>;
 			#size-cells = <0x1>;
 			interrupts = <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>;
-			phy-handle = <&phy1>;
-			phy-mode = "rgmii";
-			mdio@e14 {
+			status = "disabled";
+
+			genet_mdio: mdio@e14 {
 				#address-cells = <0x0>;
 				#size-cells = <0x1>;
 				compatible = "brcm,genet-mdio-v5";
 				reg = <0xe14 0x8>;
 				reg-names = "mdio";
-				phy1: genet-phy@0 {
-					compatible =
-						"ethernet-phy-ieee802.3-c22";
-					/* No interrupts - use PHY_POLL */
-					max-speed = <1000>;
-					reg = <0x1>;
-					led-modes = <0x00 0x08>; /* link/activity link */
-				};
 			};
 		};
 
@@ -704,11 +682,18 @@
 };
 
 &rng {
-	compatible = "brcm,bcm2838-rng200";
+	compatible = "brcm,bcm2711-rng200", "brcm,bcm2838-rng200";
 };
 
 &sdhost {
 	interrupts = <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&system_timer {
+	interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>,
+		     <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
+		     <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>,
+		     <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
 };
 
 &uart0 {

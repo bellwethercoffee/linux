@@ -5,23 +5,26 @@
  */
 
 / {
-	soc {
-		timer@7e003000 {
-			compatible = "brcm,bcm2835-system-timer";
-			reg = <0x7e003000 0x1000>;
-			interrupts = <1 0>, <1 1>, <1 2>, <1 3>;
-			/* This could be a reference to BCM2835_CLOCK_TIMER,
-			 * but we don't have the driver using the common clock
-			 * support yet.
-			 */
-			clock-frequency = <1000000>;
-		};
+	interrupt-parent = <&intc>;
 
+	soc {
 		intc: interrupt-controller@7e00b200 {
 			compatible = "brcm,bcm2835-armctrl-ic";
 			reg = <0x7e00b200 0x200>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+		};
+
+		pixelvalve@7e206000 {
+			compatible = "brcm,bcm2835-pixelvalve0";
+			reg = <0x7e206000 0x100>;
+			interrupts = <2 13>; /* pwa0 */
+		};
+
+		pixelvalve@7e207000 {
+			compatible = "brcm,bcm2835-pixelvalve1";
+			reg = <0x7e207000 0x100>;
+			interrupts = <2 14>; /* pwa1 */
 		};
 
 		thermal: thermal@7e212000 {
@@ -30,6 +33,12 @@
 			clocks = <&clocks BCM2835_CLOCK_TSENS>;
 			#thermal-sensor-cells = <0>;
 			status = "disabled";
+		};
+
+		pixelvalve@7e807000 {
+			compatible = "brcm,bcm2835-pixelvalve2";
+			reg = <0x7e807000 0x100>;
+			interrupts = <2 10>; /* pixelvalve */
 		};
 
 		v3d: v3d@7ec00000 {

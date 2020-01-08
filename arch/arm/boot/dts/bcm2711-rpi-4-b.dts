@@ -30,7 +30,7 @@
 		/delete-property/ ethernet;
 		/delete-property/ intc;
 		ethernet0 = &genet;
-		// pcie0 = &pcie_0;
+		pcie0 = &pcie_0;
 	};
 };
 
